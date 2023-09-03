@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='response-style.css') }}">
+    </head>
+
+    <body>
+        {% if access == "Granted": %}
+            <h1>HI {{ username }}, your access is GRANTED</h1>
+        {% else %}
+            <h1>HI {{ username }}, your access is DENIED</h1>
+        {% endif %}
+        {% if access == "Granted": %}
+            <h2>WELCOME TO FACIAL ACCESS CONTROL PAGE,<br> 
+            THE SITE IS STILL UNDER PRODUCTION<br>
+            STAY TUNED
+            </h2>
+        {% else %}
+            <h2>Please Reauthenticate</h2>
+        {% endif %}
+    </body>
+</html>

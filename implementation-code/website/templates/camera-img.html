@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Capture</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='camera-style.css') }}">
+</head>
+<body>
+    <video id="videoElement" autoplay></video>
+    <button id="captureButton">Open camera</button>
+    <canvas id="canvasElement" style="display: none;"></canvas>
+    <button id="uploadButton">Upload Image</button>
+
+    <script>
+        var userName = "{{ username }}";
+        const videoElement = document.getElementById('videoElement');
+        const captureButton = document.getElementById('captureButton');
+        const canvasElement = document.getElementById('canvasElement');
+        const uploadButton = document.getElementById('uploadButton');
+
+        let mediaStream = null;
+        capturePhoto();
+        // capture button click event
+        captureButton.addEventListener('click', () => {
+            capturePhoto();
+        });
+
+        // Upload button click event
+        uploadButton.addEventListener('click', () => {
+            uploadImage();
+        });
+
+        async function capturePhoto() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+                videoElement.srcObject = mediaStream;
+                videoElement.play();
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        }
+
+        function uploadImage() {
+            const canvasContext = canvasElement.getContext('2d');
+            const videoWidth = videoElement.videoWidth;
+            const videoHeight = videoElement.videoHeight;
+
+            canvasElement.width = videoWidth;
+            canvasElement.height = videoHeight;
+            canvasContext.drawImage(videoElement, 0, 0, videoWidth, videoHeight);
+
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+
+            canvasElement.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('image', blob, 'photo.jpg');
+                formData.append('username', userName)
+
+                // Send the FormData to the Flask server
+                sendImageToServer(formData);
+            }, 'image/jpeg');
+        }
+
+        function sendImageToServer(formData) {
+            fetch('/image_upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function (response) {
+                if (response.ok) {
+                    setTimeout(function () {
+                        window.location.href = '/authenticate_two';
+                    }, 2000); // 3 seconds
+                } else {
+                    alert('An error occurred. Please try again.');
+                }
+            })
+            .then(data => console.log(data))
+            .catch(error => console.error('Error sending image:', error));
+            
+        }
+    </script>
+</body>
+</html>

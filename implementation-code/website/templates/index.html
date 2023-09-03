@@ -1,0 +1,36 @@
+<!DOCTYP8dE html>
+<html>
+    <head>
+        <title>Authenitcation Page</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index-style.css') }}">
+    </head>
+
+
+    <body>
+        <h2>Login to access the camera</h2>
+        <form action="{{ url_for('authenticate_one') }}" method = "post" id="form" class="form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" style="text-align:center;"><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" style="text-align:center;"><br><br>
+        <label for="authscope">Auth Scope:</label>
+        <select id="authscope" name = "authscope">
+            <option value="hist">Histogram</option>
+            <option value="sift">SIFT</option>
+            <option value="siamese">siamese</option>
+        </select>
+
+        <button type="submit">Login</button>
+        </form>
+        
+        <div class="invalid_cred">
+			{% if invalid %}
+				<h4> Invalid username/password. Please try again!</h4>
+			{% endif %}
+            
+            {% if restart %}
+				<h4> Session Lost. Please start process again!</h4>
+			{% endif %}
+            </div>
+    </body>
+</html>
